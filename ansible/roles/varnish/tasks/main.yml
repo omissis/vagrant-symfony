@@ -1,0 +1,26 @@
+---
+- name: Add Varnish repo key
+  sudo: yes
+  shell: wget -O - https://repo.varnish-cache.org/ubuntu/GPG-key.txt | sudo apt-key add -
+
+- name: Add Varnish repo
+  sudo: yes
+  shell: echo deb https://repo.varnish-cache.org/ubuntu/ trusty varnish-4.0 | sudo tee /etc/apt/sources.list.d/varnish-cache.list
+
+- name: Update apt
+  sudo: yes
+  apt: update_cache=yes
+
+- name: Install Varnish
+  sudo: yes
+  apt: pkg=varnish state=latest
+
+- name: Configure Varnish default vcl file
+  sudo: yes
+  template: src=default.vcl.tpl dest=/etc/varnish/default.vcl
+  notify: restart varnish
+
+- name: Set Varnish configuration file
+  sudo: yes
+  template: src=varnish.tpl dest=/etc/default/varnish
+  notify: restart varnish

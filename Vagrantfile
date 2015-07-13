@@ -1,10 +1,9 @@
 Vagrant.configure("2") do |config|
     # Configure the box to use
-    config.vm.box       = 'precise64'
-    config.vm.box_url   = 'http://files.vagrantup.com/precise64.box'
+    config.vm.box = "phusion/ubuntu-14.04-amd64"
 
     # Configure the network interfaces
-    config.vm.network :private_network, ip:    "192.168.33.10"
+    config.vm.network :private_network, ip:    "192.168.35.10"
     config.vm.network :forwarded_port,  guest: 80,    host: 8080
     config.vm.network :forwarded_port,  guest: 8081,  host: 8081
     config.vm.network :forwarded_port,  guest: 3306,  host: 3306
@@ -17,12 +16,33 @@ Vagrant.configure("2") do |config|
     # Configure VirtualBox environment
     config.vm.provider :virtualbox do |v|
         v.name = (0...8).map { (65 + rand(26)).chr }.join
-        v.customize [ "modifyvm", :id, "--memory", 512 ]
+        v.customize [
+            "modifyvm", :id,
+            "--memory", 1024,
+            "--natdnshostresolver1", "on",
+            "--cpus", 1,
+        ]
     end
+
+    # Configure VMWare environment
+    config.vm.provider :vmware_fusion do |v|
+        v.gui = false
+        v.vmx["memsize"] = "1024"
+        v.vmx["numvcpus"] = "1"
+    end
+
+    # SSH Agent
+    config.ssh.forward_agent = true
 
     # Provision the box
     config.vm.provision :ansible do |ansible|
-        ansible.extra_vars = { ansible_ssh_user: 'vagrant' }
         ansible.playbook = "ansible/site.yml"
+        ansible.inventory_path = "ansible/inventories/hosts"
+        ansible.limit = 'all'
+        ansible.extra_vars = {
+            private_interface: "192.168.35.10",
+            ansible_ssh_user: 'vagrant',
+            vagrant: true
+        }
     end
 end
