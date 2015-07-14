@@ -7,10 +7,19 @@
     sudo: yes
     apt:  pkg={{ item }} state=latest
     with_items:
-      - curl
-      - wget
+      - acl
       - build-essential
+      - curl
+      - imagemagick
+      - iotop
+      - make
+      - mc
+      - postfix
+      - python-pycurl
       - python-software-properties
+      - software-properties-common
+      - vim
+      - wget
 
   - name: Add PHP 5.6 repo
     apt_repository: repo=ppa:ondrej/php5-5.6
