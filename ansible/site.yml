@@ -29,6 +29,7 @@
     - composer
     - mysql
     - mongo
+    - nodejs
     - git
     - curl
     - sqlite
