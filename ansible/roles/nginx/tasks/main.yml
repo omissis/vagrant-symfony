@@ -10,4 +10,3 @@
     sudo: yes
     template: src=default.tpl dest=/etc/nginx/sites-available/default
     notify: restart nginx
-
