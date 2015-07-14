@@ -13,6 +13,9 @@
 - name: Install PHP extensions
   sudo: yes
   shell: echo "\n" | /usr/bin/pecl install {{ item.package }} creates=/usr/lib/php5/20121212/{{ item.name }}.so
+  register: pecl_result
+  changed_when: "'already installed' not in pecl_result.stdout"
+  failed_when: "pecl_result.stderr"
   with_items: php_extensions
 
 - name: Configure PHP extensions
